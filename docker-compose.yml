@@ -5,7 +5,7 @@ services:
     container_name: apps-fe
     restart: always
     ports:
-      - "8000:80"
+      - "8001:80"
     networks:
       - web-profile-net
 
