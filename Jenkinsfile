@@ -2,40 +2,38 @@ pipeline {
     agent any
 
     environment {
-        TARGET_USER = "cicd"
-        PROD_HOST   = "192.168.150.150"
-        STAGING_HOST= "192.168.192.78"
+        TARGET_HOST = "192.168.192.88"
     }
 
     stages {
 
-        stage('Resolve Target') {
+        stage('Resolve Target Environment') {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'main') {
-                        env.TARGET_HOST = env.PROD_HOST
-                        env.TARGET_DIR  = "/home/cicd/pdf"
-                        env.DEPLOY_ENV  = "PRODUCTION"
+                        env.TARGET_USER = "apps"
+                        env.TARGET_DIR  = "/home/apps/cicd/apps-fe"
+                        env.ENV_NAME    = "PRODUCTION"
                     } 
                     else if (env.BRANCH_NAME == 'staging') {
-                        env.TARGET_HOST = env.STAGING_HOST
-                        env.TARGET_DIR  = "/home/cicd/pdf"
-                        env.DEPLOY_ENV  = "STAGING"
+                        env.TARGET_USER = "dev"
+                        env.TARGET_DIR  = "/home/dev/cicd-dev/apps-fe"
+                        env.ENV_NAME    = "STAGING"
                     } 
                     else {
-                        error "Branch ${env.BRANCH_NAME} is not allowed to deploy"
+                        error "❌ Branch ${env.BRANCH_NAME} is not allowed to deploy"
                     }
                 }
 
-                echo "ENV    : ${DEPLOY_ENV}"
-                echo "HOST   : ${TARGET_HOST}"
-                echo "DIR    : ${TARGET_DIR}"
+                echo "Environment : ${env.ENV_NAME}"
+                echo "Branch      : ${env.BRANCH_NAME}"
+                echo "Target      : ${env.TARGET_USER}@${TARGET_HOST}:${env.TARGET_DIR}"
             }
         }
 
         stage('Prepare Target') {
             steps {
-                sshagent(['privatekey-akr']) {
+                sshagent(['privatekey']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} '
                         mkdir -p ${TARGET_DIR}
@@ -46,30 +44,26 @@ pipeline {
         }
 
         stage('Sync Repository') {
-    steps {
-        sshagent(['privatekey-akr']) {
-            sh """
-            rsync -avz \
-              --exclude '.git' \
-              --exclude '.jenkins' \
-              --exclude 'stirling-data' \
-              --exclude 'stirling-data/**' \
-              ./ \
-              ${TARGET_USER}@${TARGET_HOST}:${TARGET_DIR}/
-            """
+            steps {
+                sshagent(['privatekey']) {
+                    sh """
+                    rsync -avz --delete \
+                        --exclude '.git' \
+                        --exclude '.jenkins' \
+                        ./ \
+                        ${TARGET_USER}@${TARGET_HOST}:${TARGET_DIR}/
+                    """
+                }
+            }
         }
-    }
-}
-
 
         stage('Deploy Docker Compose') {
             steps {
-                sshagent(['privatekey-akr']) {
+                sshagent(['privatekey']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} '
                         cd ${TARGET_DIR} &&
-                        docker compose pull &&
-                        docker compose up -d --force-recreate
+                        docker compose up -d --build --force-recreate --remove-orphans
                     '
                     """
                 }
@@ -79,10 +73,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ ${DEPLOY_ENV} DEPLOY SUCCESS (${env.BRANCH_NAME})"
+            echo "✅ ${env.ENV_NAME} Deployment SUCCESS"
         }
         failure {
-            echo "❌ ${DEPLOY_ENV} DEPLOY FAILED (${env.BRANCH_NAME})"
+            echo "❌ ${env.ENV_NAME} Deployment FAILED"
         }
     }
 }
