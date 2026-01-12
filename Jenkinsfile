@@ -11,12 +11,12 @@ pipeline {
             steps {
                 script {
                     if (env.BRANCH_NAME == 'main') {
-                        env.TARGET_USER = "apps"
+                        env.TARGET_USER = "onprem"
                         env.TARGET_DIR  = "/home/onprem/cicd-prod/fe"
                         env.ENV_NAME    = "PRODUCTION"
                     } 
                     else if (env.BRANCH_NAME == 'staging') {
-                        env.TARGET_USER = "dev"
+                        env.TARGET_USER = "onprem"
                         env.TARGET_DIR  = "/home/dev/cicd-dev/apps-fe"
                         env.ENV_NAME    = "STAGING"
                     } 
@@ -33,7 +33,7 @@ pipeline {
 
         stage('Prepare Target') {
             steps {
-                sshagent(['privatekey']) {
+                sshagent(['privatekey-akr']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} '
                         mkdir -p ${TARGET_DIR}
@@ -45,7 +45,7 @@ pipeline {
 
         stage('Sync Repository') {
             steps {
-                sshagent(['privatekey']) {
+                sshagent(['privatekey-akr']) {
                     sh """
                     rsync -avz --delete \
                         --exclude '.git' \
@@ -59,7 +59,7 @@ pipeline {
 
         stage('Deploy Docker Compose') {
             steps {
-                sshagent(['privatekey']) {
+                sshagent(['privatekey-akr']) {
                     sh """
                     ssh -o StrictHostKeyChecking=no ${TARGET_USER}@${TARGET_HOST} '
                         cd ${TARGET_DIR} &&
