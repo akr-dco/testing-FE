@@ -12,7 +12,7 @@ pipeline {
                 script {
                     if (env.BRANCH_NAME == 'main') {
                         env.TARGET_USER = "apps"
-                        env.TARGET_DIR  = "/home/apps/cicd/apps-fe"
+                        env.TARGET_DIR  = "/home/onprem/cicd-prod/fe"
                         env.ENV_NAME    = "PRODUCTION"
                     } 
                     else if (env.BRANCH_NAME == 'staging') {
