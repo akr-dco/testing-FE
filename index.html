@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page - Profesional</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- RESET CSS --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+            background-color: #f3f4f6;
+        }
+
+        /* --- LAYOUT UTAMA (SPLIT SCREEN) --- */
+        .container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+        }
+
+        /* --- BAGIAN KIRI (VISUAL) --- */
+        .left-panel {
+            width: 50%;
+            /* Ganti URL di bawah ini dengan gambar brand Anda */
+            background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=2301&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 3rem;
+        }
+
+        /* Overlay gelap agar teks terbaca */
+        .left-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.1));
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            color: white;
+            max-width: 450px;
+        }
+
+        .left-content h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .left-content p {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* --- BAGIAN KANAN (FORM) --- */
+        .right-panel {
+            width: 50%;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .login-wrapper {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #111827;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 0.95rem;
+        }
+
+        /* --- FORM STYLING --- */
+        .form-group {
+            margin-bottom: 1.25rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        /* Icon Mata Password */
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 2.3rem; /* Menyesuaikan posisi vertikal */
+            color: #6b7280;
+            cursor: pointer;
+        }
+
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #4b5563;
+        }
+
+        .forgot-pass {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .forgot-pass:hover {
+            text-decoration: underline;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 0.75rem;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #1d4ed8;
+        }
+
+        /* --- SOCIAL LOGIN / DIVIDER --- */
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 1.5rem 0;
+            color: #9ca3af;
+            font-size: 0.85rem;
+        }
+
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .divider span {
+            padding: 0 10px;
+        }
+
+        .social-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-social {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.6rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            color: #374151;
+            transition: background 0.2s;
+        }
+
+        .btn-social:hover {
+            background-color: #f9fafb;
+        }
+
+        .signup-link {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .signup-link a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* --- RESPONSIVE (MOBILE) --- */
+        @media (max-width: 768px) {
+            .left-panel {
+                display: none; /* Sembunyikan gambar di HP */
+            }
+            .right-panel {
+                width: 100%;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <div class="left-panel">
+            <div class="left-content">
+                <h2>Kelola Bisnis Anda Lebih Efisien.</h2>
+                <p>Bergabunglah dengan ribuan profesional yang telah mempercayai platform kami.</p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="login-wrapper">
+                
+                <div class="header">
+                    <h1>Selamat Datang</h1>
+                    <p>Silakan masuk dengan detail akun Anda.</p>
+                </div>
+
+                <form action="#" method="POST"> <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" placeholder="nama@perusahaan.com" required autofocus>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" placeholder="Masukan password" required>
+                        <i class="fa-regular fa-eye password-toggle" id="togglePassword"></i>
+                    </div>
+
+                    <div class="actions">
+                        <label class="remember-me">
+                            <input type="checkbox" name="remember"> Ingat saya
+                        </label>
+                        <a href="#" class="forgot-pass">Lupa password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-primary">Masuk ke Akun</button>
+
+                    <div class="divider">
+                        <span>atau masuk dengan</span>
+                    </div>
+
+                    <div class="social-buttons">
+                        <button type="button" class="btn-social">
+                            <i class="fa-brands fa-google"></i> Google
+                        </button>
+                        <button type="button" class="btn-social">
+                            <i class="fa-brands fa-apple"></i> Apple
+                        </button>
+                    </div>
+
+                    <div class="signup-link">
+                        Belum punya akun? <a href="#">Daftar sekarang</a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const togglePassword = document.querySelector('#togglePassword');
+        const passwordInput = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function () {
+            // Ubah tipe input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            
+            // Ubah icon mata (Solid vs Regular atau Slash)
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    </script>
+
+</body>
+</html>
