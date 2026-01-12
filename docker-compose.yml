@@ -1,0 +1,14 @@
+services:
+  apps-fe:
+    image: apps-fe:latest
+    build: .
+    container_name: apps-fe
+    restart: always
+    ports:
+      - "8000:80"
+    networks:
+      - web-profile-net
+
+networks:
+  web-profile-net:
+    driver: bridge
